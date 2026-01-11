@@ -6,6 +6,7 @@ import { useEventSource } from '@/hooks/useEventSource';
 import { BattleScene } from '@/components/BattleScene';
 import { BattleLog } from '@/components/BattleLog';
 import { PartyStatus } from '@/components/PartyStatus';
+import { ExportGifButton } from '@/components/ExportGifButton';
 import type { BattleState, BattleEvent } from '@jrpg-visualizer/core';
 
 export default function BattleViewer() {
@@ -87,6 +88,14 @@ export default function BattleViewer() {
             <span className="text-xs text-gray-500">
               {isConnected ? 'Connected' : 'Disconnected'}
             </span>
+          </div>
+
+          {/* Export GIF button */}
+          <div className="mt-4">
+            <ExportGifButton
+              sessionId={battleState?.sessionId ?? null}
+              imageCount={events.filter((e) => e.imagePath).length}
+            />
           </div>
         </header>
 

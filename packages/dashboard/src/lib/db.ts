@@ -125,3 +125,78 @@ export function getPartyMembers(): PartyMember[] {
     experience: row.experience,
   }));
 }
+
+/**
+ * Get all image paths for a specific session in chronological order
+ */
+export function getSessionImages(sessionId: string): string[] {
+  const database = getDatabase();
+  const rows = database
+    .prepare(
+      `
+      SELECT image_path FROM battle_events
+      WHERE session_id = ? AND image_path IS NOT NULL
+      ORDER BY created_at ASC
+    `
+    )
+    .all(sessionId) as Array<{ image_path: string }>;
+
+  return rows.map((row) => row.image_path);
+}
+
+/**
+ * Get the current/most recent session ID
+ */
+export function getCurrentSessionId(): string | null {
+  const database = getDatabase();
+  const row = database
+    .prepare(
+      `
+      SELECT session_id FROM battle_state
+      ORDER BY updated_at DESC
+      LIMIT 1
+    `
+    )
+    .get() as { session_id: string } | undefined;
+
+  return row?.session_id ?? null;
+}
+
+/**
+ * Get all available session IDs with their image counts
+ */
+export function getAvailableSessions(): Array<{
+  sessionId: string;
+  imageCount: number;
+  firstEventAt: number;
+  lastEventAt: number;
+}> {
+  const database = getDatabase();
+  const rows = database
+    .prepare(
+      `
+      SELECT
+        session_id,
+        COUNT(CASE WHEN image_path IS NOT NULL THEN 1 END) as image_count,
+        MIN(created_at) as first_event_at,
+        MAX(created_at) as last_event_at
+      FROM battle_events
+      GROUP BY session_id
+      HAVING image_count > 0
+      ORDER BY last_event_at DESC
+    `
+    )
+    .all() as Array<{
+    session_id: string;
+    image_count: number;
+    first_event_at: number;
+    last_event_at: number;
+  }>;
+
+  return rows.map((row) => ({
+    sessionId: row.session_id,
+    imageCount: row.image_count,
+    firstEventAt: row.first_event_at,
+    lastEventAt: row.last_event_at,
+  }));
+}

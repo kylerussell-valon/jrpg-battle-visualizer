@@ -4,7 +4,11 @@
   "private": true,
   "description": "Transform Claude Code work sessions into dramatic JRPG battle visualizations",
   "pnpm": {
-    "onlyBuiltDependencies": ["better-sqlite3", "esbuild"]
+    "onlyBuiltDependencies": [
+      "better-sqlite3",
+      "esbuild",
+      "sharp"
+    ]
   },
   "scripts": {
     "build": "pnpm -r build",
@@ -12,10 +16,13 @@
     "setup:party": "tsx scripts/seed-party.ts",
     "hook:install": "tsx scripts/install-hook.ts",
     "hook:uninstall": "tsx scripts/install-hook.ts --uninstall",
-    "hook:test": "tsx packages/hook/src/index.ts"
+    "hook:test": "tsx packages/hook/src/index.ts",
+    "export-gif": "tsx scripts/export-gif.ts"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20.10.0",
+    "better-sqlite3": "^11.10.0",
     "tsx": "^4.7.0",
     "typescript": "^5.3.0"
   },
